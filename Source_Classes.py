@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
 """
 Created on Wed Apr 28 09:04:09 2021
+Edited on Dec 28 2021
 
 @author: steven
 """
@@ -11,7 +11,6 @@ Created on Wed Apr 28 09:04:09 2021
 #     """
 #     def __init__(self, UTME, UTMN)
 # =============================================================================
-
 
 class Source(object):
     """
@@ -45,25 +44,6 @@ class Source(object):
     def __str__(self):  
         return self.srcType + " Source: [%0.3f, %0.3f]" % (self.UTME, self.UTMN)
 
-# =============================================================================
-# #Testing Source Object Methods
-# 
-# EPN_A = Source(123.456,3211.546,"Point")
-# print(EPN_A)
-# print(EPN_A.get_UTME())
-# print(EPN_A.get_UTMN())
-# print(EPN_A.get_UTMs())
-# 
-# EPN_A.set_UTME(589.7599655)
-# print(EPN_A.get_UTME())
-# 
-# EPN_A.set_UTMN(58559.7599655)
-# print(EPN_A.get_UTMN())
-# 
-# EPN_A.set_UTMs(456.58797,111.1)
-# print(EPN_A.get_UTMs())
-# 
-# print(EPN_A)
 # =============================================================================
 
 class Point(Source):
@@ -127,26 +107,7 @@ class Point(Source):
             # + "\n Exit Velocity (m/s): [%0.4f]" % str(self.Vel) \
             # + "\n Exhaust Temp (K): [%0.4f]" % str(self.Tem)
 
-# =============================================================================
-# EPN_A = Point(123123.456,3211123.546,"Point")
-# print(EPN_A)
-# print()
-# EPN_A.set_Height(10.00,"ft")
-# EPN_A.set_Diameter(10,"m")
-# EPN_A.set_Velocity(15,"m/s")
-# EPN_A.set_Temperature(150,"K")
-# print(EPN_A)
-# 
-# # EPN_A.set_UTME(589.7599655)
-# # print(EPN_A.get_UTME())
-# 
-# # EPN_A.set_UTMN(58559.7599655)
-# # print(EPN_A.get_UTMN())
-# 
-# # EPN_A.set_UTMs(456.58797,111.1)
-# # print(EPN_A.get_UTMs())
-# 
-# # print(EPN_A)
+
 # =============================================================================
 
 class Flare(Point):
@@ -172,20 +133,21 @@ class Flare(Point):
         Qn = Q*(1-0.048*(MW**0.5)) 
         self.Dia = (0.000001*Qn)**0.5
             
-                    
+# =============================================================================
+
 class Volume(Source):
     """
-    Point Sources have height, diameter, velocity, and temperature
+    Volume Sources have release height, side length, Initial X Dimension, and Initial Y Dimension
     - Height in Meters
-    - Diameter in Meters
-    - Velocity in Meters/Sec
-    - Temperature in Kelvin
+    - Side length in Meters
+    - InitX in Meters
+    - InitY in Meters
     """
     def __init__(self, UTME, UTMN, srcType="Volume", Hgt=None, SideLen=None, SigY=None, SigZ=None):
         """
         Initialize the Point Source release parameters
         """
-        Source.__init__(self, UTME, UTMN, srcType = "Point")
+        Source.__init__(self, UTME, UTMN, srcType = "Volume")
         self.Hgt = Hgt
         self.SideLen = SideLen
         self.SigY = SigY
@@ -253,29 +215,63 @@ class Volume(Source):
 
 # TODO how to get this print statement to round like the UTMs.
 
+           
 # =============================================================================
-# EPN_A = Volume(123123.456,3211123.546,"Point")
-# print(EPN_A)
-# print()
-# EPN_A.set_Height(10.00,"ft")
-# EPN_A.set_SideLength(10,"m")
-# EPN_A.set_InitX(0.710,"m")
-# EPN_A.set_InitY(0.142,"m")
-# print(EPN_A)
-# print()
-# 
-# EPN_A.calc_InitX(100)
-# EPN_A.calc_InitY(20)
-# print(EPN_A)
-# print()
-# 
-# EPN_A.calc_InitX(100,"SV")
-# EPN_A.calc_InitY(20,"SF")
-# print(EPN_A)
-# print()
-# 
-# EPN_A.calc_InitX(100,"SV")
-# EPN_A.calc_InitY(20,"en",10)
-# print(EPN_A)
-# print()
-# =============================================================================
+
+class Area(Source):
+    """
+    Area Sources have release height, X-length, Y-length, and orientation
+    - Height in Meters
+    - X-length in Meters
+    - Y-length in Meters
+    - Orientation in degrees
+    """
+    def __init__(self, UTME, UTMN, srcType="Volume", Hgt=None, XLen=None, YLen=None, Size=None, Orient=None):
+        """
+        Initialize the Point Source release parameters
+        """
+        Source.__init__(self, UTME, UTMN, srcType = "Area")
+        self.Hgt = Hgt
+        self.XLen = XLen
+        self.YLen = YLen
+        self.Orient = Orient
+        self.Size = Size
+    def get_Height(self):
+        return self.Hgt
+    def get_XLen(self):
+        return self.XLen
+    def get_YLen(self):
+        return self.YLen
+    def get_Orient(self):
+        return self.Orient
+    def set_Height(self, Hgt, Units="m"):
+        assert Units == "m" or Units == "ft", "Enter Height in units of ft or m"
+        if Units == "ft":
+            self.Hgt = Hgt * 0.3048
+        else:
+            self.Hgt = float(Hgt)
+    def set_XLen(self, XLen, Units="m"):
+        assert Units == "m" or Units == "ft", "Enter Area X-axis length in units of ft or m"
+        if Units == "ft":
+            self.XLen = XLen * 0.3048
+        else:
+            self.XLen = float(XLen)
+    def set_YLen(self, YLen, Units="m"):
+        assert Units == "m" or Units == "ft", "Enter Area Y-axis length in units of ft or m"
+        if Units == "ft":
+            self.YLen = YLen * 0.3048
+        else:
+            self.YLen = float(YLen)
+    def set_Orient(self, Orient, Units="deg"):
+        assert Units == "deg", "Enter Area Orientation from North in degrees only (deg). Not Radians"
+        self.Orient = float(Orient)
+    def calc_Size(self):
+        if self.XLen is not None and self.YLen is not None: #Could this be cleaner with an "assert" instead?
+            self.Size = self.XLen * self.YLen    
+    def __str__(self):  
+        return self.srcType + " Source: [%0.3f, %0.3f]" % (self.UTME, self.UTMN) \
+            + "\n Height (m): " + str(self.Hgt) \
+            + "\n X Length (m): " + str(self.XLen) \
+            + "\n Y Length (m): " + str(self.YLen) \
+            + "\n Footprint Size (m^2): " + str(self.Size) \
+            + "\n Orient (deg): " + str(self.Orient) 
